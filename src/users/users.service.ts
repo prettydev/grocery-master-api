@@ -239,37 +239,14 @@ export class UsersService {
   }
 
   async updatePlan(
-    user_id: string,
-    kind: string,
-    months: number,
+    plan_name: string,
+    user_id: string,    
   ): Promise<IUser> {
-    const oldUser = await this.userModel.findById(
-      new mongodb.ObjectID(user_id),
-    );
-    if (oldUser.plan === "pro") {
-      return null;
-    }
-
     const expired_at = new Date();
-    expired_at.setMonth(expired_at.getMonth() + months);
+    expired_at.setMonth(expired_at.getMonth() + 1);
 
-    let updateQuery = {};
-
-    if (kind === "points" && months === 1) {
-      updateQuery = { $inc: { points: -100 } };
-    } else if (kind === "points" && months === 12) {
-      updateQuery = { $inc: { points: -999 } };
-    } else if (kind === "coins" && months === 1) {
-      updateQuery = { $inc: { coins: -10 } };
-    } else if (kind === "coins" && months === 12) {
-      updateQuery = { $inc: { coins: -99 } };
-    } else {
-      return null;
-    }
-
-    updateQuery["plan"] = "pro";
-    updateQuery["expired_at"] = expired_at;
-
+    const updateQuery = { $inc: { coins: -99 }, plan:plan_name, expired_at };
+    
     console.log(updateQuery, ":updateQuery");
 
     return this.userModel.findOneAndUpdate(

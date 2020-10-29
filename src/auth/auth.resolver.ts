@@ -233,14 +233,12 @@ export class AuthResolver {
 
   @Mutation((returns) => Boolean)
   async updatePlan(
+    @Args("plan_name") plan_name: string,
     @Args("user_id") user_id: string,
-    @Args("kind") kind: string, //coins or points
-    @Args("months") months: number,
   ): Promise<boolean> {
     const userUpdated = await this.usersService.updatePlan(
+      plan_name,
       user_id,
-      kind,
-      months,
     );
     if (!userUpdated) {
       return false;

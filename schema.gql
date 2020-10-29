@@ -279,7 +279,7 @@ type Mutation {
   changeNoteChannels(note_channels: [String!]!, user_id: String!): ResType!
   changeNoteCases(note_cases: [String!]!, user_id: String!): ResType!
   exchange(coins: Float!, user_id: String!): Boolean!
-  updatePlan(months: Float!, kind: String!, user_id: String!): Boolean!
+  updatePlan(user_id: String!, plan_name: String!): Boolean!
   uploadFile(file: Upload!): Boolean!
 }
 
