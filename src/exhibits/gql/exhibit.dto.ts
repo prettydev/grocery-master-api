@@ -1,8 +1,7 @@
 import { Field, Float, ID, ObjectType } from "@nestjs/graphql";
-import { ProductType } from "./product.dto";
+import { GroceryType } from "./grocery.dto";
 import { SimpleProductType } from "../../gql_common/types/common.object";
 import { UserType } from "../../users/gql/user.dto";
-import { BadgeType } from "../../badges/gql/badge.dto";
 
 @ObjectType()
 export class FunderType {
@@ -249,8 +248,8 @@ export class ExhibitProductType {
   @Field((type) => ExhibitType)
   exhibit: ExhibitType;
 
-  @Field((type) => ProductType)
-  product: ProductType;
+  @Field((type) => GroceryType)
+  product: GroceryType;
 }
 
 @ObjectType()
@@ -258,8 +257,8 @@ export class AuctionProductType {
   @Field((type) => AuctionType)
   auction: AuctionType;
 
-  @Field((type) => ProductType)
-  product: ProductType;
+  @Field((type) => GroceryType)
+  product: GroceryType;
 }
 
 @ObjectType()
@@ -267,8 +266,8 @@ export class HistoryProductType {
   @Field((type) => HistoryType)
   history: HistoryType;
 
-  @Field((type) => ProductType)
-  product: ProductType;
+  @Field((type) => GroceryType)
+  product: GroceryType;
 }
 
 @ObjectType()
@@ -323,15 +322,6 @@ export class MessageType {
 }
 
 @ObjectType()
-export class GameType {
-  @Field() //sender
-  userUpdated: UserType;
-
-  @Field((type) => BadgeType)
-  badge: BadgeType;
-}
-
-@ObjectType()
 export class NoteType {
   @Field()
   noteUpdated: string;
@@ -364,8 +354,8 @@ export class HistoryStatisticsType {
 
 @ObjectType()
 export class FetchProductType {
-  @Field((type) => [ProductType])
-  arr: ProductType[];
+  @Field((type) => [GroceryType])
+  arr: GroceryType[];
 
   @Field()
   cnt: number;

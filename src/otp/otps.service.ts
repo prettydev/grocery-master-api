@@ -5,7 +5,7 @@ import { ResType } from "src/gql_common/types/common.object";
 
 dotenv.config();
 
-const twilioClient = require("twilio")(process.env.TWILIO_SID, process.env.TWILIO_TOKEN);
+const twilioClient = null;//require("twilio")(process.env.TWILIO_SID, process.env.TWILIO_TOKEN);
 
 interface IToken {
   user_id: string;

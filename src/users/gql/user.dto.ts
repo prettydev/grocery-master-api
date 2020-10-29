@@ -1,14 +1,4 @@
 import { ObjectType, Field, ID } from "@nestjs/graphql";
-import { BadgeType } from "../../badges/gql/badge.dto";
-
-@ObjectType()
-export class BadgeDateType {
-  @Field()
-  readonly badge: BadgeType;
-
-  @Field()
-  readonly created_at: Date;
-}
 
 @ObjectType()
 export class LoginType {
@@ -109,9 +99,6 @@ export class UserType {
 
   @Field(() => [FriendDateType], { nullable: true })
   readonly friends: FriendDateType[];
-
-  @Field(() => [BadgeDateType], { nullable: true })
-  readonly badges: BadgeDateType[];
 
   @Field((type) => [String], { nullable: true })
   readonly note_channels: string[];

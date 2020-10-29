@@ -1,15 +1,9 @@
 import { Document } from "mongoose";
-import { IBadge } from "../../badges/db/badge.interface";
 
 export interface ISocial {
   name: string;
   email: string;
   image: string;
-}
-
-export interface IBadgeDate {
-  badge: IBadge;
-  created_at: Date;
 }
 
 export type IChannel = "facebook" | "email" | "text" | "note";
@@ -48,8 +42,7 @@ export interface IUser extends Document {
   readonly points: number;
 
   readonly friends: [IFriendDate];
-  readonly badges: [IBadgeDate];
-
+  
   readonly email_verified: boolean;
   readonly phone_verified: boolean;
 

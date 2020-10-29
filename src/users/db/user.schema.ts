@@ -26,19 +26,6 @@ const UserSchema = new Schema(
         created_at: Date,
       },
     ],
-    badges: [
-      {
-        badge: {
-          type: Schema.Types.ObjectId,
-          ref: "Badge",
-          required: true,
-          autopopulate: {
-            select: "kind image title details type points rewards difficulty",
-          },
-        },
-        created_at: Date,
-      },
-    ],
     email_verified: { type: Boolean, default: false },
     phone_verified: { type: Boolean, default: false },
     note_channels: [String],

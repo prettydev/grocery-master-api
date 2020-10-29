@@ -11,12 +11,10 @@ import { PubSub } from "apollo-server-express";
 
 import { NotesService } from "../notes/notes.service";
 import { OtpsService } from "../otp/otps.service";
-import { GamificationService } from "../gamification/gamification.service";
 
 import { IUser, IFetchUser, IChannel, ICase } from "./db/user.interface";
 import { NewUserInput, LoginUserInput, Social } from "./gql/new-user.input";
 import { PageArgs, Filter } from "../gql_common/types/common.input";
-import { IFriend } from "src/friends/db/friend.interface";
 import { ResType } from "src/gql_common/types/common.object";
 
 const mongodb = require("mongodb");
@@ -30,11 +28,9 @@ export class UsersService {
 
   constructor(
     @InjectModel("User") private readonly userModel: Model<IUser>,
-    @InjectModel("Friend") private readonly friendModel: Model<IFriend>,
     @Inject("PUB_SUB") private pubSub: PubSub,
     private notesService: NotesService,
-    private otpsService: OtpsService,
-    private gamificationService: GamificationService,
+    private otpsService: OtpsService,    
   ) {}
 
   //registration
@@ -48,31 +44,10 @@ export class UsersService {
 
     try {
       const newUser = await createdUser.save();
-
-      if (newUser && ref.length === 24) {
-        //mongodb id length
-        this.gamificationService.AffiliateBadge(ref);
-      }
-
       return newUser;
     } catch (e) {
       console.log("user creation exception:", e.toString());
       return null;
-    }
-  }
-
-  async affiliate(ref: string): Promise<boolean> {
-    try {
-      if (ref.length === 24) {
-        //mongodb id length
-        return await this.gamificationService.AffiliateBadge(ref);
-      } else {
-        console.log("wrong affiliate length:", ref);
-        return false;
-      }
-    } catch (e) {
-      console.log("user creation exception:", e.toString());
-      return false;
     }
   }
 
@@ -181,61 +156,6 @@ export class UsersService {
     return { arr, cnt };
   }
 
-  async findNoFriends(
-    pageArgs: PageArgs,
-    filter: Filter,
-    user_id: string,
-  ): Promise<IFetchUser> {
-    let sort = {};
-    if (!filter.sort) sort = { points: -1 };
-
-    const user = await this.userModel.findById(user_id);
-
-    if (!user) {
-      return null;
-    }
-
-    const no_me_and_friends_ids = [
-      { _id: { $ne: new mongodb.ObjectID(user_id) } },
-    ]; //my id
-    user.friends.map((f) => {
-      no_me_and_friends_ids.push({
-        _id: { $ne: new mongodb.ObjectID(f.friend.id) },
-      });
-    }); //friends ids
-
-    const sent_friends = await this.friendModel.find({
-      sender: new mongodb.ObjectID(user_id),
-    }).exec();
-    if (sent_friends && !!sent_friends.length) {
-      sent_friends.map((sf) => {
-        no_me_and_friends_ids.push({
-          _id: { $ne: new mongodb.ObjectID(sf.receiver.id) },
-        });
-      });
-    } // sent friends ids
-
-    const filterQuery = {
-      ...this.getFilter(filter),
-      $and: no_me_and_friends_ids,
-    };
-
-    const arr = await this.userModel
-      .find(
-        filterQuery,
-        {},
-        {
-          skip: pageArgs.skip,
-          limit: pageArgs.take,
-          sort,
-        },
-      )
-      .exec();
-
-    const cnt = await this.userModel.countDocuments(filterQuery).exec();
-    return { arr, cnt };
-  }
-
   async remove(id: string): Promise<boolean> {
     return true;
   }
@@ -253,18 +173,7 @@ export class UsersService {
       { _id: new mongodb.ObjectID(user_id) },
       { [social.key]: social.value },
       { new: true },
-    );
-    if (userUpdated) {
-      await this.gamificationService.SocialBadge(userUpdated.id, social.key); //gamification
-      if (
-        userUpdated.facebook &&
-        userUpdated.google &&
-        userUpdated.email_verified
-      ) {
-        //twitter, phone_verified, avatar, username
-        await this.gamificationService.ProfileBadge(userUpdated.id);
-      }
-    }
+    );    
     return userUpdated;
   }
 
@@ -287,17 +196,6 @@ export class UsersService {
       });
       console.log("social ok with new user...");
       const userUpdated = await createdUser.save();
-      if (userUpdated) {
-        await this.gamificationService.SocialBadge(userUpdated.id, social.key); //gamification
-        if (
-          userUpdated.facebook &&
-          userUpdated.google &&
-          userUpdated.email_verified
-        ) {
-          //twitter, phone_verified, avatar, username
-          await this.gamificationService.ProfileBadge(userUpdated.id);
-        }
-      }
       return userUpdated;
     }
   }
@@ -409,16 +307,7 @@ export class UsersService {
     );
     this.pubSub.publish("userUpdated", {
       userUpdated,
-    });
-    await this.gamificationService.EmailBadge(userUpdated.id);
-    if (
-      userUpdated.facebook &&
-      userUpdated.google &&
-      userUpdated.email_verified
-    ) {
-      //twitter, phone_verified, avatar, username
-      await this.gamificationService.ProfileBadge(userUpdated.id);
-    }
+    });    
     return true;
   }
 
@@ -442,17 +331,7 @@ export class UsersService {
     );
     this.pubSub.publish("userUpdated", {
       userUpdated,
-    });
-    await this.gamificationService.PhoneBadge(userUpdated.id);
-    if (
-      userUpdated.facebook &&
-      userUpdated.google &&
-      userUpdated.email_verified &&
-      userUpdated.phone_verified
-    ) {
-      //twitter, avatar, username
-      await this.gamificationService.ProfileBadge(userUpdated.id);
-    }
+    });    
     return {code:"success"};
   }
 }

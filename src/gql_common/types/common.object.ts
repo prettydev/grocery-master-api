@@ -5,9 +5,7 @@ import { Field, ObjectType } from "@nestjs/graphql";
 
 @ObjectType()
 export class SimpleProductType {
-  @Field()
-  asin: string;
-
+  
   @Field()
   title: string;
 

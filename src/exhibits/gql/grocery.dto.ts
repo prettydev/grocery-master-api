@@ -11,8 +11,6 @@ export class FirstAvailableType {
 @ObjectType()
 export class VariantType {
   @Field()
-  asin: string;
-  @Field()
   title: string;
   @Field()
   link: string;
@@ -91,51 +89,71 @@ export class BuyboxType {
 }
 
 @ObjectType()
-export class ProductType {
+export class I18NType {
   @Field()
-  asin: string;
+  lang: string;
   @Field()
-  title: string;
-  // @Field((type) => FirstAvailableType)
-  // first_available: FirstAvailableType;
+  value: string;
+}
+
+@ObjectType()
+export class LocationType {
   @Field()
-  model_number: string;
-  @Field({ nullable: true })
-  link?: string;
-  // @Field((type) => [VariantType])
-  // variants: VariantType[];
-  @Field((type) => [NameLinkType])
-  categories: NameLinkType[];
+  address: string;
   @Field()
-  delivery_message?: string;
-  @Field({ nullable: true })
-  description?: string;
-  @Field((type) => TextLinkType)
-  sub_title?: TextLinkType;
+  lng: number;
   @Field()
-  has_coupon?: boolean;
+  lat: number;
+}
+
+@ObjectType()
+export class CreditCardType {
   @Field()
-  rating?: number;
+  card_number: string;
   @Field()
-  main_image: LinkType;
+  expired_date: string;
+  @Field()
+  cvv: string;
+}
+
+@ObjectType()
+export class GroceryType {
+  @Field()
+  name: string;  
+  @Field()
+  second_lang: string;
+  @Field()
+  mobile: string;
+  @Field()
+  owner_email: string;
+  @Field()
+  bank_account: string;
+  @Field()
+  contact_email: string;
+  @Field()
+  contact_phone: string;
+  @Field()
+  opening_hours: number;
+  @Field()
+  delivery_radius: number;
+  @Field()
+  min_order: number;
+  @Field()
+  first_offer_discount: number;
+  @Field()
+  is_collect: boolean;
+  @Field((type)=>LinkType)
+  logo: LinkType;
   @Field((type) => [LinkVariantType])
   images?: LinkVariantType[];
-  // @Field()
-  // images_count: number;
-  @Field((type) => [String])
-  feature_bullets: string[];
-  // @Field()
-  // feature_bullets_count: number;
-  // @Field()
-  // feature_bullets_flat: string;
-  @Field((type) => [NameValueType])
-  attributes: NameValueType[];
-  @Field((type) => BuyboxType)
-  buybox_winner: BuyboxType;
-  @Field((type) => [NameValueType])
-  specifications: NameValueType[];
-  // @Field()
-  // specifications_flat: string;
+  @Field((type)=>LocationType)
+  location: LocationType;
   @Field()
-  active: boolean;
+  credit_card: CreditCardType;
+  @Field((type) => [I18NType])
+  description: [I18NType];
+  @Field((type) => [I18NType])
+  delivery_policy: [I18NType];
+  @Field((type) => [I18NType])
+  about_us: [I18NType];  
 }

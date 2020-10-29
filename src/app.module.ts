@@ -10,19 +10,9 @@ import { ExhibitsModule } from "./exhibits/exhibits.module";
 import { AuthModule } from "./auth/auth.module";
 import { UsersModule } from "./users/users.module";
 
-import { PaypalModule } from "./paypal/paypal.module";
-import { OrdersModule } from "./orders/orders.module";
-import { WishesModule } from "./wishes/wishes.module";
-import { BadgesModule } from "./badges/badges.module";
-import { SocketModule } from "./socket/socket.module";
-
-import { RmqModule } from "./rmq/rmq.module";
 import { PubSubModule } from "./pubsub/pubsub.module";
-import { GamificationModule } from "./gamification/gamification.module";
 import { LoginsModule } from "./logins/logins.module";
 import { NotesModule } from "./notes/notes.module";
-import { FriendsModule } from "./friends/friends.module";
-import { FacebookModule } from "./facebook/facebook.module";
 
 import * as dotenv from "dotenv";
 dotenv.config();
@@ -53,18 +43,9 @@ dotenv.config();
     ExhibitsModule,
     AuthModule,
     UsersModule,
-    PaypalModule,
-    OrdersModule,
-    WishesModule,
-    BadgesModule,
-    SocketModule,
-    RmqModule,
     PubSubModule,
-    GamificationModule,
     LoginsModule,
-    NotesModule,
-    FriendsModule,
-    FacebookModule,
+    NotesModule,    
   ],
   controllers: [AppController],
   providers: [AppService],

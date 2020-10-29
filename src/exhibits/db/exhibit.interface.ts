@@ -15,7 +15,6 @@ export type TState =
 export interface ISimpleProduct {
   id: string;
   title: string;
-  asin: string;
   link: string;
   category: Array<string>;
   image: string;

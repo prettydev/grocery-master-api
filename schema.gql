@@ -1,0 +1,462 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type LinkType {
+  link: String!
+}
+
+type LinkVariantType {
+  link: String!
+  variant: String!
+}
+
+type IsNewType {
+  is_new: Boolean!
+}
+
+type PriceType {
+  symbol: String
+  value: Float!
+  currency: String
+  raw: String
+}
+
+type I18NType {
+  lang: String!
+  value: String!
+}
+
+type LocationType {
+  address: String!
+  lng: Float!
+  lat: Float!
+}
+
+type CreditCardType {
+  card_number: String!
+  expired_date: String!
+  cvv: String!
+}
+
+type GroceryType {
+  name: String!
+  second_lang: String!
+  mobile: String!
+  owner_email: String!
+  bank_account: String!
+  contact_email: String!
+  contact_phone: String!
+  opening_hours: Float!
+  delivery_radius: Float!
+  min_order: Float!
+  first_offer_discount: Float!
+  is_collect: Boolean!
+  logo: LinkType!
+  images: [LinkVariantType!]!
+  location: LocationType!
+  credit_card: CreditCardType!
+  description: [I18NType!]!
+  delivery_policy: [I18NType!]!
+  about_us: [I18NType!]!
+}
+
+type SimpleProductType {
+  title: String!
+  link: String!
+  category: [String!]!
+  image: String!
+  rating: Float!
+  price: Float!
+}
+
+type ResType {
+  code: String!
+  message: String
+}
+
+type SocialType {
+  name: String
+  email: String
+  image: String
+}
+
+type FriendUserType {
+  id: ID!
+  username: String
+  email: String!
+  avatar: String
+}
+
+type FriendDateType {
+  friend: FriendUserType!
+  created_at: Date!
+}
+
+"""Date custom scalar type"""
+scalar Date
+
+type UserType {
+  id: ID!
+  username: String
+  email: String!
+  password: String
+  plan: String
+  role: String
+  phone: String
+  avatar: String
+  wins: Float
+  coins: Float
+  points: Float
+  email_verified: Boolean
+  phone_verified: Boolean
+  friends: [FriendDateType!]
+  note_channels: [String!]
+  note_cases: [String!]
+  facebook: SocialType
+  google: SocialType
+  twitter: SocialType
+  expired_at: Date
+  created_at: Date
+  updated_at: Date
+}
+
+type UserResult {
+  user: UserType
+  message: String!
+}
+
+type FunderType {
+  user: UserType!
+  amount: Float!
+  payer: String
+  pay_order_id: String
+}
+
+type ExhibitType {
+  id: ID!
+  product: SimpleProductType!
+  funders: [FunderType!]
+  fund_amount: Float!
+  fund_percent: Float!
+  threshold: Float!
+  manual: Float!
+}
+
+type FetchExhibitType {
+  arr: [ExhibitType!]!
+  cnt: Float!
+}
+
+type UserValueType {
+  user: UserType!
+  value: Float!
+}
+
+type AutoValueType {
+  user: UserType!
+  value: Float!
+  active: Boolean!
+}
+
+type AuctionType {
+  id: ID!
+  product: SimpleProductType!
+  funders: [FunderType!]
+  fund_amount: Float!
+  fund_percent: Float!
+  threshold: Float!
+  autos: [AutoValueType!]
+  bidders: [UserValueType!]
+  watchers: [String!]
+  chatters: [String!]
+  state: String!
+  timer: Float!
+  live_timer: Float
+  bid_speed: Float
+  campaign: Boolean!
+  reserved: Boolean!
+  manual: Float!
+  bid_started_at: Date!
+  bid_ended_at: Date!
+}
+
+type FetchAuctionType {
+  arr: [AuctionType!]!
+  cnt: Float!
+  timestamp: Float!
+}
+
+type AuctionTimeType {
+  auction: AuctionType!
+  timestamp: Float!
+}
+
+type HistoryType {
+  id: ID!
+  product: SimpleProductType!
+  funders: [FunderType!]
+  fund_amount: Float!
+  fund_percent: Float!
+  threshold: Float!
+  autos: [UserValueType!]
+  bidders: [UserValueType!]
+  watchers: [String!]
+  chatters: [String!]
+  state: String!
+  timer: Float!
+  live_timer: Float
+  bid_speed: Float
+  campaign: Boolean!
+  reserved: Boolean!
+  manual: Float!
+  bid_started_at: Date!
+  bid_ended_at: Date!
+  winner: UserType
+  end_bids: Float!
+  tracking: String
+}
+
+type FetchHistoryType {
+  arr: [HistoryType!]!
+  cnt: Float!
+}
+
+type MessageType {
+  room_id: String!
+  user_id: String!
+  username: String!
+  avatar: String!
+  content: String!
+  created_at: Date!
+}
+
+type CurrentStatisticsType {
+  online_users: Float!
+  online_bid_users: Float!
+  bids_per_action: Float!
+}
+
+type HistoryStatisticsType {
+  total_actions: Float!
+  total_winners: Float!
+  max_users: Float!
+  bids_per_action: Float!
+}
+
+type FetchProductType {
+  arr: [GroceryType!]!
+  cnt: Float!
+}
+
+type NoteType {
+  id: ID!
+  content: String!
+  receivers: [String!]!
+  created_at: Date!
+}
+
+type PrivateNoteType {
+  id: ID!
+  title: String!
+  content: String!
+  receiver: String!
+  created_at: Date!
+}
+
+type FetchNoteType {
+  arr: [NoteType!]!
+  cnt: Float!
+}
+
+type Query {
+  messages: [MessageType!]!
+  exhibits(filter: Filter!, pageArgs: PageArgs!): FetchExhibitType!
+  top_exhibits: [ExhibitType!]!
+  auctions(filter: Filter!, pageArgs: PageArgs!): FetchAuctionType!
+  last_auction(filter: Filter!, pageArgs: PageArgs!): AuctionType!
+  admin_auctions(filter: Filter!, pageArgs: PageArgs!): FetchAuctionType!
+  getAuctionLiveTimer(auction_id: String!): Boolean!
+  histories(filter: Filter!, pageArgs: PageArgs!): FetchHistoryType!
+  currentStatistics: CurrentStatisticsType!
+  historyStatistics: HistoryStatisticsType!
+  admin_products(filter: Filter!, pageArgs: PageArgs!): FetchProductType!
+  admin_completed_auctions(filter: Filter!, pageArgs: PageArgs!): FetchHistoryType!
+  notes(user_id: String!, filter: Filter!, pageArgs: PageArgs!): FetchNoteType!
+  user(id: String!): UserType!
+  users(key: String!, sort: String!, order: String, cat: String!, skip: Int!, take: Int!): [UserType!]!
+  login(user: LoginUserInput!): UserResult!
+}
+
+input Filter {
+  key: String!
+  sort: String!
+  order: String
+  cat: String!
+}
+
+input PageArgs {
+  skip: Int!
+  take: Int!
+}
+
+input LoginUserInput {
+  email: String!
+  password: String!
+}
+
+type Mutation {
+  addMessage(message: MessageInput!): Boolean!
+  setThreshold(threshold: SetThresholdInput!): ExhibitType!
+  removeExhibit(id: String!): Boolean!
+  setCampaign(campaign: SetCampaignInput!): AuctionType!
+  setReserved(reserved: SetReservedInput!): Boolean!
+  setExhibitManual(exhibit_id: String!, manual: Float!): Boolean!
+  setAuctionManual(auction_id: String!, manual: Float!): Boolean!
+  setTimer(input: SetTimerInput!): Boolean!
+  bid(input: BidAuctionInput!): Boolean!
+  auto(input: AutoAuctionInput!): Boolean!
+  admin_add_tracking(tracking: String!, id: String!): ResType!
+  add_grocery(grocery: GroceryInput!): Boolean!
+  sendAuthEmail(email: String!, user_id: String!): Boolean!
+  sendEmail(content: String!, receivers: [String!]!): Boolean!
+  removeNote(note_id: String!): Boolean!
+  sendSMS(phone: String!, user_id: String!): ResType!
+  verifySMS(token: String!, user_id: String!): ResType!
+  removeUser(id: String!): Boolean!
+  register(ref: String, user: NewUserInput!): Boolean!
+  changeAvatar(avatar: String!, user_id: String!): Boolean!
+  addSocial(social: Social!, user_id: String!): Boolean!
+  socialRegisterLogin(social: Social!): UserResult!
+  changePassword(password: String!, current_password: String!, user_id: String!): ResType!
+  changeNoteChannels(note_channels: [String!]!, user_id: String!): ResType!
+  changeNoteCases(note_cases: [String!]!, user_id: String!): ResType!
+  exchange(coins: Float!, user_id: String!): Boolean!
+  updatePlan(months: Float!, kind: String!, user_id: String!): Boolean!
+  uploadFile(file: Upload!): Boolean!
+}
+
+input MessageInput {
+  room_id: String!
+  user_id: String!
+  username: String!
+  avatar: String!
+  content: String!
+  created_at: Date!
+}
+
+input SetThresholdInput {
+  exhibit_id: String!
+  threshold: Float!
+}
+
+input SetCampaignInput {
+  auction_id: String!
+  campaign: Boolean!
+}
+
+input SetReservedInput {
+  auction_id: String!
+  value: Boolean!
+}
+
+input SetTimerInput {
+  auction_id: String!
+  timer: Float!
+}
+
+input BidAuctionInput {
+  auction_id: String!
+  user: String!
+  value: Float!
+}
+
+input AutoAuctionInput {
+  auction_id: String!
+  user: String!
+  value: Float!
+  active: Boolean!
+}
+
+input GroceryInput {
+  name: String!
+  second_lang: String!
+  mobile: String!
+  owner_email: String!
+  bank_account: String!
+  contact_email: String!
+  contact_phone: String!
+  opening_hours: Float!
+  delivery_radius: Float!
+  min_order: Float!
+  first_offer_discount: Float!
+  is_collect: Boolean!
+  logo: LinkInput!
+  images: [LinkVariantInput!]
+  location: ILocation!
+  credit_card: ICreditCard!
+  description: [II18N!]!
+  delivery_policy: [II18N!]!
+  about_us: [II18N!]!
+}
+
+input LinkInput {
+  link: String!
+}
+
+input LinkVariantInput {
+  link: String!
+  variant: String
+}
+
+input ILocation {
+  address: String!
+  lng: Float!
+  lat: Float!
+}
+
+input ICreditCard {
+  card_number: String!
+  expired_date: String!
+  cvv: String!
+}
+
+input II18N {
+  lang: String!
+  value: String!
+}
+
+input NewUserInput {
+  username: String!
+  email: String!
+  password: String!
+  plan: String
+  phone: String
+  avatar: String
+}
+
+input Social {
+  key: String!
+  value: SocialBody!
+}
+
+input SocialBody {
+  name: String!
+  email: String!
+  image: String!
+}
+
+"""The `Upload` scalar type represents a file upload."""
+scalar Upload
+
+type Subscription {
+  exhibitUpdated(exhibit_id: String!): ExhibitType!
+  auctionUpdated(auction_id: String!): AuctionTimeType!
+  messageAdded(user_id: String!, room_id: String!): MessageType!
+  currentUpdated: CurrentStatisticsType!
+  historyUpdated: HistoryStatisticsType!
+  noteUpdated(user_id: String!): NoteType!
+  privateNoteUpdated(user_id: String!): PrivateNoteType!
+  userAdded: UserType!
+  userUpdated(user_id: String!): UserType!
+}

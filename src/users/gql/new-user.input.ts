@@ -2,18 +2,6 @@ import { Field, InputType } from "@nestjs/graphql";
 import { IsOptional, Length, MaxLength } from "class-validator";
 
 @InputType()
-export class InputBadge {
-  @Field()
-  title: string; //email, phone, google, facebook, twitter
-
-  @Field()
-  account: string;
-
-  @Field({ nullable: true })
-  verified_at: Date;
-}
-
-@InputType()
 export class NewUserInput {
   @Field()
   username: string;
@@ -33,10 +21,7 @@ export class NewUserInput {
   @Field({ nullable: true })
   @IsOptional()
   @Length(10, 255)
-  avatar?: string;
-
-  // @Field((type) => [InputBadge])
-  // badges: InputBadge[];
+  avatar?: string;  
 }
 
 @InputType()

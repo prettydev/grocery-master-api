@@ -14,24 +14,6 @@ export class UsersResolver {
     @Inject("PUB_SUB") private pubSub: PubSub,
   ) {}
 
-  @Query((returns) => FetchUserType)
-  async nofriends(
-    @Args("pageArgs") pageArgs: PageArgs,
-    @Args("filter") filter: Filter,
-    @Args("user_id") user_id: string,
-  ): Promise<FetchUserType> {
-    if (!user_id) {
-      console.log("no user_id for no friends");
-      return null;
-    }
-    const res = await this.usersService.findNoFriends(
-      pageArgs,
-      filter,
-      user_id,
-    );
-    return res;
-  }
-
   @Mutation((returns) => ResType)
   async verifySMS(
     @Args("user_id") user_id: string,

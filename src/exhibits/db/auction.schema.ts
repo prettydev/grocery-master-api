@@ -8,7 +8,6 @@ const AuctionSchema = new mongoose.Schema(
   {
     product: {
       title: String,
-      asin: String,
       link: String,
       category: [String],
       image: String,

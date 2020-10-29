@@ -1,17 +1,10 @@
 import { Model } from "mongoose";
 import { HttpService, Injectable, Inject, Logger } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import { Cron, Interval, Timeout, CronExpression } from "@nestjs/schedule";
+import { Interval } from "@nestjs/schedule";
 import { PubSub } from "apollo-server-express";
-import { ClientProxy } from "@nestjs/microservices";
-import { Server, Socket } from "socket.io";
-
-import { SubscribeMessage } from "@nestjs/websockets";
 
 import { UsersService } from "../users/users.service";
-import { GamificationService } from "../gamification/gamification.service";
-
-import { SocketService } from "../socket/socket.service";
 import { NotesService } from "../notes/notes.service";
 
 import {
@@ -62,13 +55,9 @@ export class ExhibitsService {
     @InjectModel("Message") private readonly messageModel: Model<IMessage>,
     @InjectModel("Login") private readonly loginModel: Model<ILogin>,
     @Inject("PUB_SUB") private pubSub: PubSub,
-    // @Inject("MQ_PUB") private mqPub: ClientProxy,
     private usersService: UsersService,
     private notesService: NotesService,
-    private gamificationService: GamificationService,
-
-    private httpService: HttpService,
-    private socketService: SocketService,
+    private httpService: HttpService,    
   ) {
     this.initMemoryVariables();
   }
@@ -92,47 +81,6 @@ export class ExhibitsService {
     ///////////////////////////// for infinit test /////////////////////////////
     this.psuedo_auto_users = await this.userModel.find().exec();
     ////////////////////////////////////////////////////////////////////////////
-  }
-
-  private checking_time = 5; // wait more delta seconds
-  private show_time = 60;// shows winner for 10min, now 1min for test 
-
-  @Interval(1000) //runs every second
-  async updateAuctionsState(): Promise<any> {
-    if (!this.live_auctions || !this.live_auctions.length) {
-      return;
-    }
-
-    this.live_auctions.map(async (auction: IAuction) => {
-      if (auction.live_timer > ((auction.bidders.length > 0)?(-1 * (this.checking_time+this.show_time)):0)) {
-        auction.live_timer--;
-
-        if (auction.bidders.length <= 0 && auction.live_timer === 0) {
-          auction.live_timer = auction.timer; //restart the timer          
-        }
-        if (auction.bidders.length > 0 && auction.live_timer === 0) {
-          auction.state = "checking";          
-        }
-        if (auction.bidders.length > 0 && auction.live_timer === -1 * this.checking_time) {
-          auction.state = "show";          
-        }
-        if (auction.live_timer === 0 || auction.live_timer === -1 * this.checking_time) {
-          this.pubSub.publish("auctionUpdated", { auctionUpdated: { auction, timestamp: new Date().getTime() }});
-        }
-      } else {
-        if (auction.bidders.length > 0) {
-          this.live_auctions = this.live_auctions.filter(
-            (l_a) => l_a.id !== auction.id,
-          );
-          auction.state = "end";
-          this.createHistoryFromAuction(auction);
-          this.sendWinnerNote(auction);
-        } else {
-          auction.live_timer = auction.timer; //restart the timer
-        }
-        this.pubSub.publish("auctionUpdated", { auctionUpdated: { auction, timestamp: new Date().getTime() }});
-      }
-    });
   }
 
   sendWinnerNote(auction: IAuction): void {
@@ -305,20 +253,6 @@ export class ExhibitsService {
       });
     }
 
-    // try {
-    //   this.mqPub.emit<number>(
-    //     "auction",
-    //     `${userUpdated.username}(${userUpdated.email}) consumed ${bidAuctionInput.value}coins by biding to the product ${auctionUpdated.product.asin}(${auctionUpdated.product.title})`,
-    //   );
-    // } catch (e) {
-    //   console.log(e.toString(), "mq exception");
-    // }
-
-    await this.gamificationService.CalcCombosOutbid(
-      userUpdated.id,
-      auctionUpdated.id,
-    ); //gamification
-
     ///////////////////fbpost////////////////////////////////
     // if (!auto && auctionUpdated.campaign) {
     if (!auto) {
@@ -405,19 +339,9 @@ export class ExhibitsService {
     }
 
     if (autoAuctionInput.active) {
-      const userUpdated = await this.userModel.findOne({
+      await this.userModel.findOne({
         _id: new mongodb.ObjectID(autoAuctionInput.user),
-      });
-
-      if (
-        userUpdated &&
-        userUpdated.facebook &&
-        userUpdated.google &&
-        userUpdated.email_verified
-      ) {
-        //twitter, phone, avatar, username
-        this.gamificationService.AutoBidderBadge(userUpdated.id);
-      }
+      });      
     }
 
     return auctionUpdated;
@@ -439,55 +363,6 @@ export class ExhibitsService {
     this.logger.log(updatedAuction);
 
     return updatedAuction;
-  }
-
-  async fund(fundExhibitInput: FundExhibitInput): Promise<IExhibitUser> {
-    const updatedExhibit = await this.exhibitModel.findOneAndUpdate(
-      {
-        _id: new mongodb.ObjectID(fundExhibitInput.exhibit_id),
-      },
-      {
-        $inc: { fund_amount: fundExhibitInput.amount },
-        $addToSet: {
-          funders: {
-            amount: fundExhibitInput.amount,
-            user: new mongodb.ObjectID(fundExhibitInput.user),
-            payer: fundExhibitInput.payer,
-            pay_order_id: fundExhibitInput.pay_order_id,
-          },
-        },
-      },
-      {
-        new: true,
-      },
-    );
-
-    const updated_percent = Math.round(
-      (updatedExhibit.fund_amount / updatedExhibit.product.price) * 100,
-    );
-
-    const percentUpdatedExhibit = await this.exhibitModel.findOneAndUpdate(
-      {
-        _id: new mongodb.ObjectID(fundExhibitInput.exhibit_id),
-      },
-      {
-        fund_percent: updated_percent,
-      },
-      {
-        new: true,
-      },
-    );
-
-    const updatedUser = await this.usersService.increaseCoins(
-      fundExhibitInput.user,
-      fundExhibitInput.amount,
-    );
-
-    if (updated_percent >= 100) {
-      await this.user_move2auction(percentUpdatedExhibit);      
-    }
-
-    return { exhibit: percentUpdatedExhibit, user: updatedUser };
   }
 
   async setThreshold(exhibit_id: string, threshold: number): Promise<IExhibit> {
@@ -616,101 +491,6 @@ export class ExhibitsService {
       .exec();
   }
 
-  /**
-   *     input : Funded exhibit
-   *     add fields
-   *     - state : string, ready/cool/warmer/warmest/hot/hotter/dutch/hottest/end
-   *     - autos : [{user, limit}]
-   *     - bidders : [{user, value}]
-   */
-
-  async user_move2auction(data: IExhibit): Promise<void> {
-
-    let new_auction = null;
-    let old_auction = null;
-
-    const old_auctions = await this.auctionModel.find({ "product.asin": data.product.asin }).exec();
-    
-    if (old_auctions) {
-      old_auction = old_auctions[0]
-    }
-
-    console.log("old_auction", old_auction);
-
-    if (old_auction) {      
-      old_auction.funders = [...old_auction.funders, ...data.funders];
-      old_auction.fund_amount = old_auction.fund_amount + data.fund_amount;
-      old_auction.fund_percent = old_auction.fund_percent + data.fund_percent;
-      
-      let manual = 65535;
-      const manual_items = await this.auctionModel.find({ manual: { $lt: 65535 } }, {}, { sort: { manual: -1 } }).exec();
-      if (manual_items[0]) {
-        manual = manual_items[0].manual + 1;
-      } 
-
-      old_auction.manual = manual;
-
-      const old_auction_model = new this.auctionModel(old_auction);
-      new_auction = await old_auction_model.save();    
-      
-      if (new_auction && new_auction.manual !== 65535) {        
-          this.setAuctionManual(new_auction.manual, new_auction.id);        
-      }      
-    } else {
-      const auction = new AuctionType();
-      auction.id = data.id;
-      auction.product = data.product;
-      auction.funders = data.funders;
-      auction.fund_amount = data.fund_amount;
-      auction.fund_percent = data.fund_percent;
-      auction.threshold = data.threshold;
-      auction.manual = data.manual;
-      ///////////////////////////////////////////
-      auction.autos = [];
-      auction.bidders = [];
-      auction.watchers = [];
-      auction.chatters = [];    
-      auction.state = "cool";
-      auction.timer = 1800; //default timer
-
-      const auctionModel = new this.auctionModel(auction);
-      auctionModel._id = auction.id; //use the same _id with exhibit, so just move to auction collection with some more fields
-      new_auction = await auctionModel.save();      
-      
-      if (new_auction) {
-        if (new_auction.manual !== 65535) {
-          this.setAuctionManual(new_auction.manual, new_auction.id);// change order manual according to the exhibit
-        }        
-        new_auction.live_timer = new_auction.timer;
-        new_auction.bid_speed = 0;
-        this.live_auctions.push(new_auction);        
-      }      
-    }   
-    
-    if (new_auction) {
-      this.removeExhibit(new_auction.id);
-      this.notesService.new_auction_notify(new_auction.id);
-    }
-  }
-
-  async auction2auction(data: IAuction): Promise<IAuction> {
-    const auction = new AuctionType();
-    auction.product = data.product;
-
-    auction.funders = [];    
-    auction.autos = [];
-    auction.bidders = [];
-    auction.watchers = [];
-    auction.chatters = [];
-    auction.state = "cool";
-    auction.timer = 1800; //default timer
-
-    const auctionModel = new this.auctionModel(auction);
-    const new_auction = await auctionModel.save();
-
-    return new_auction;    
-  }
-
   // @Timeout(1000)
   // async startCreateTestAuctions(): Promise<void> {
   //   this.createTestAuctionFromExhibit(0);
@@ -773,51 +553,6 @@ export class ExhibitsService {
    *     - winner : user
    *     - end_bids: number
    */
-
-  async createHistoryFromAuction(data: IAuction): Promise<HistoryType> {
-    const history = new HistoryType();
-    history.id = data.id;
-    history.product = data.product;
-    history.funders = data.funders;
-    history.fund_amount = data.fund_amount;
-    history.fund_percent = data.fund_percent;
-    history.threshold = data.threshold;
-    ///////////////////////////////////////////
-    history.autos = data.autos;
-    history.bidders = data.bidders;
-    history.watchers = data.watchers;
-    history.chatters = data.chatters;
-    history.timer = data.timer;
-    history.live_timer = 0;
-    history.bid_speed = data.bid_speed;
-    history.state = "end";
-    //////////////////////////////////////////
-    history.winner = data.bidders[0].user;
-    history.end_bids = data.bidders[0].value;
-    history.bid_ended_at = new Date();
-
-    const historyModel = new this.historyModel(history);
-    historyModel._id = history.id; //use the same _id with auction, so just move to history collection with some more fields
-    const new_history = await historyModel.save();
-
-    if (new_history === historyModel) {
-      await this.auctionModel.deleteOne({_id: new mongodb.ObjectID(history.id)});
-
-      const new_auction = await this.auction2auction(data);//create new one with same product, just for test version
-      new_auction.live_timer = data.timer;
-      new_auction.bid_speed = 0;
-      this.live_auctions.push(new_auction);
-
-      this.usersService.increaseWins(new_history.winner.id);
-      this.logger.log("created new history from the auction.");
-      await this.gamificationService.FSTWin(history.winner.id);
-      await this.gamificationService.RevealedHeart(history.winner.id);
-    } else {
-      this.logger.error("failed to create new history...");
-    }
-
-    return history;
-  }
 
   async auctions(
     pageArgs: PageArgs,

@@ -11,8 +11,6 @@ export class FirstAvailableInput {
 @InputType()
 export class VariantInput {
   @Field()
-  asin: string;
-  @Field()
   title: string;
   @Field()
   link: string;
@@ -80,68 +78,81 @@ export class PriceInput {
   raw?: string;
 }
 
+
 @InputType()
-export class BuyboxInput {
+export class II18N {
   @Field()
-  condision: IsNewInput;
-  @Field((type) => PriceInput)
-  price: PriceInput;
-  @Field((type) => PriceInput)
-  shipping: PriceInput;
+  lang: string;
+  @Field()
+  value: string;
 }
 
 @InputType()
-export class ProductInput {
+export class ILocation {
   @Field()
-  asin: string;
+  address: string;
   @Field()
-  title: string;
-  // @Field((type) => FirstAvailableType)
-  // first_available: FirstAvailableType;
+  lng: number;
   @Field()
-  model_number: string;
-  @Field({ nullable: true })
-  link?: string;
-  // @Field((type) => [VariantType])
-  // variants: VariantType[];
-  @Field((type) => [NameLinkInput])
-  categories: NameLinkInput[];
-  @Field({ nullable: true })
-  delivery_message?: string;
-  @Field({ nullable: true })
-  description?: string;
-  @Field((type) => TextLinkInput)
-  sub_title?: TextLinkInput;
+  lat: number;
+}
+
+@InputType()
+export class ICreditCard {
   @Field()
-  has_coupon?: boolean;
+  card_number: string;
   @Field()
-  rating?: number;
+  expired_date: string;
   @Field()
-  main_image: LinkInput;
+  cvv: string;
+}
+
+@InputType()
+export class GroceryInput {
+  @Field()
+  name: string;  
+  @Field()
+  second_lang: string;
+  @Field()
+  mobile: string;
+  @Field()
+  owner_email: string;
+  @Field()
+  bank_account: string;
+  @Field()
+  contact_email: string;
+  @Field()
+  contact_phone: string;
+  @Field()
+  opening_hours: number;
+  @Field()
+  delivery_radius: number;
+  @Field()
+  min_order: number;
+  @Field()
+  first_offer_discount: number;
+  @Field()
+  is_collect: boolean;
+  @Field((type)=>LinkInput)
+  logo: LinkInput;
   @Field((type) => [LinkVariantInput])
   images?: LinkVariantInput[];
-  // @Field()
-  // images_count: number;
-  @Field((type) => [String])
-  feature_bullets: string[];
-  // @Field()
-  // feature_bullets_count: number;
-  // @Field()
-  // feature_bullets_flat: string;
-  @Field((type) => [NameValueInput])
-  attributes: NameValueInput[];
-  @Field((type) => BuyboxInput)
-  buybox_winner: BuyboxInput;
-  @Field((type) => [NameValueInput])
-  specifications: NameValueInput[];
-  // @Field()
-  // specifications_flat: string;
+  @Field((type)=>ILocation)
+  location: ILocation;
+  @Field((type)=>ICreditCard)
+  credit_card: ICreditCard;
+  @Field((type) => [II18N])
+  description: [II18N];
+  @Field((type) => [II18N])
+  delivery_policy: [II18N];
+  @Field((type) => [II18N])
+  about_us: [II18N];
 }
 
 @InputType()
 export class ProductTimerInput {
-  @Field((type) => ProductInput)
-  product: ProductInput;
+  @Field((type) => GroceryInput)
+  product: GroceryInput;
 
   @Field()
   live_timer: number;

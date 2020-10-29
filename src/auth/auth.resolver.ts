@@ -1,16 +1,14 @@
-import { NotFoundException, Inject, Logger } from "@nestjs/common";
+import { Inject, Logger } from "@nestjs/common";
 import { Args, Mutation, Query, Resolver, Subscription } from "@nestjs/graphql";
 import { PubSub } from "apollo-server-express";
 
 import { GraphQLUpload, FileUpload } from "graphql-upload";
 import { createWriteStream } from "fs";
 
-import { ClientProxy } from "@nestjs/microservices";
-
 import { AuthService } from "./auth.service";
 import { UsersService } from "../users/users.service";
 import { LoginsService } from "../logins/logins.service";
-import { UserType, LoginType, UserResult } from "../users/gql/user.dto";
+import { UserType, UserResult } from "../users/gql/user.dto";
 import { ResType } from "../gql_common/types/common.object";
 import {
   NewUserInput,
@@ -55,7 +53,6 @@ export class AuthResolver {
   }
 
   /**
-   * ????????????????
    * @param pageArgs
    * @param filter
    */
@@ -83,13 +80,6 @@ export class AuthResolver {
       return { user: null, message: "error" };
     }
 
-    // this.mqPub.emit<number>(
-    //   "auth",
-    //   `${userUpdated.username}(${userUpdated.email}) is signed in.`,
-    // );
-
-    console.log("login...", userUpdated.id);
-
     return { user: userUpdated, message: "success" };
   }
 
@@ -103,8 +93,7 @@ export class AuthResolver {
     })
     ref: string,
   ): Promise<boolean> {
-    console.log(newUserData, "ref:::", ref, ref.length);
-
+    
     const userAdded = await this.usersService.create(newUserData, ref);
 
     if (!userAdded) {
@@ -112,11 +101,6 @@ export class AuthResolver {
     }
 
     return true;
-  }
-
-  @Mutation((returns) => Boolean)
-  async affiliate(@Args("ref") ref: string): Promise<boolean> {
-    return await this.usersService.affiliate(ref);
   }
 
   @Mutation((returns) => Boolean)
@@ -130,10 +114,6 @@ export class AuthResolver {
     }
 
     this.pubSub.publish("userUpdated", { userUpdated });
-    // this.mqPub.emit<number>(
-    //   "auth",
-    //   `${userUpdated.username}(${userUpdated.email}) changed avatar.`,
-    // );
     return true;
   }
 
@@ -153,10 +133,6 @@ export class AuthResolver {
     }
 
     this.pubSub.publish("userUpdated", { userUpdated });
-    // this.mqPub.emit<number>(
-    //   "auth",
-    //   `${userUpdated.username}(${userUpdated.email}) added social.`,
-    // );
     return true;
   }
 
@@ -173,10 +149,6 @@ export class AuthResolver {
       return { user: null, message: "error" };
     }
 
-    // this.mqPub.emit<number>(
-    //   "auth",
-    //   `${userUpdated.username}(${userUpdated.email}) added social.`,
-    // );
     return { user: userUpdated, message: "success" };
   }
 
@@ -202,11 +174,6 @@ export class AuthResolver {
     if (!userUpdated)
       return { code: "error", message: "Failed to update the password!" };
 
-    // this.mqPub.emit<number>(
-    //   "auth",
-    //   `${userUpdated.username}(${userUpdated.email}) changed password.`,
-    // );
-
     return { code: "success", message: "The password updated successfully!" };
   }
 
@@ -224,12 +191,7 @@ export class AuthResolver {
       return { code: "error", message: "Error occured!" };
     }
 
-    this.pubSub.publish("userUpdated", { userUpdated });
-    // this.mqPub.emit<number>(
-    //   "auth",
-    //   `${userUpdated.username}(${userUpdated.email}) changed notification ways.`,
-    // );
-
+    this.pubSub.publish("userUpdated", { userUpdated });    
     return { code: "success", message: "Notifying ways updated successfully!" };
   }
 
@@ -239,8 +201,6 @@ export class AuthResolver {
     @Args({ name: "note_cases", type: () => [String] })
     note_cases: ICase[],
   ): Promise<ResType> {
-    console.log(user_id, note_cases);
-
     const userUpdated = await this.usersService.changeNoteCases(
       user_id,
       note_cases,
@@ -250,11 +210,7 @@ export class AuthResolver {
     }
 
     this.pubSub.publish("userUpdated", { userUpdated });
-    // this.mqPub.emit<number>(
-    //   "auth",
-    //   `${userUpdated.username}(${userUpdated.email}) changed notification cases.`,
-    // );
-
+    
     return {
       code: "success",
       message: "Notification cases updated successfully!",
@@ -272,10 +228,6 @@ export class AuthResolver {
     }
 
     this.pubSub.publish("userUpdated", { userUpdated });
-    // this.mqPub.emit<number>(
-    //   "auth",
-    //   `${userUpdated.username}(${userUpdated.email}) changed avatar.`,
-    // );
     return true;
   }
 

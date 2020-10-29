@@ -1,7 +1,6 @@
 import { NotFoundException, Inject, Logger } from "@nestjs/common";
 import { Args, Mutation, Query, Resolver, Subscription } from "@nestjs/graphql";
 import { PubSub } from "apollo-server-express";
-// import { ClientProxy } from "@nestjs/microservices";
 
 import {
   FundExhibitInput,
@@ -31,8 +30,8 @@ import {
   HistoryStatisticsType,
 } from "./gql/exhibit.dto";
 import { ExhibitsService } from "./exhibits.service";
-import { ProductsService } from "./products.service";
-import { ProductInput } from "./gql/product.input";
+import { GroceriesService } from "./groceries.service";
+import { GroceryInput as GroceryInput } from "./gql/grocery.input";
 import { ResType } from "src/gql_common/types/common.object";
 
 @Resolver()
@@ -41,7 +40,7 @@ export class ExhibitsResolver {
 
   constructor(
     private readonly exhibitsService: ExhibitsService,
-    private readonly productsService: ProductsService,
+    private readonly groceriesService: GroceriesService,
     @Inject("PUB_SUB") private pubSub: PubSub, // @Inject("MQ_PUB") private mqPub: ClientProxy,
   ) {}
 
@@ -93,65 +92,6 @@ export class ExhibitsResolver {
     return this.exhibitsService.findMessages();
   }
 
-  ////////////////////////////////////////////////////////////////////////
-  @Query((returns) => HistoryProductType)
-  async history(
-    @Args("history_id") history_id: string,
-  ): Promise<HistoryProductType> {
-    const history = await this.exhibitsService.history(history_id);
-    if (!history) {
-      this.logger.error(`no history from the exhibits service ${history_id}`);
-      return null;
-    }
-    const product = await this.productsService.find(history.product.asin);
-    if (!product) {
-      this.logger.error(`no product for history_id ${history_id}`);
-      return null;
-    }
-    return { history, product };
-  }
-
-  @Query((returns) => AuctionProductType)
-  async auction(
-    @Args("auction_id") auction_id: string,
-    @Args("user_id") user_id: string,
-  ): Promise<AuctionProductType> {
-    const auction = await this.exhibitsService.findLiveAuctionByIdAndWatch(
-      auction_id,
-      user_id,
-    );
-    if (!auction) {
-      this.logger.error(`no auction from the exhibits service ${auction_id}`);
-      return null;
-    }
-    const product = await this.productsService.find(auction.product.asin);
-    if (!product) {
-      this.logger.error(`no product for auction_id ${auction_id}`);
-      return null;
-    }
-
-    return { auction, product };
-  }
-  ////////////////////////////////////////////////////////////////////////
-
-  @Query((returns) => ExhibitProductType)
-  async exhibit(
-    @Args("exhibit_id") exhibit_id: string,
-  ): Promise<ExhibitProductType> {
-    const exhibit = await this.exhibitsService.findExhibitById(exhibit_id);
-    if (!exhibit) {
-      this.logger.error(`no exhibit from the exhibits service ${exhibit_id}`);
-      return null;
-    }
-    const product = await this.productsService.find(exhibit.product.asin);
-    if (!product) {
-      this.logger.error(`no product for exhibit_id ${exhibit_id}`);
-      return null;
-    }
-
-    return { exhibit, product };
-  }
-
   @Query((returns) => FetchExhibitType)
   exhibits(
     @Args("pageArgs") pageArgs: PageArgs,
@@ -163,20 +103,6 @@ export class ExhibitsResolver {
   @Query((returns) => [ExhibitType])
   top_exhibits(): Promise<ExhibitType[]> {
     return this.exhibitsService.findTop();
-  }
-
-  @Mutation((returns) => Boolean)
-  async fund(
-    @Args("input") fundExhibitInput: FundExhibitInput,
-  ): Promise<boolean> {
-    console.log(fundExhibitInput, ":fund params from the client");
-    const {
-      exhibit: exhibitUpdated,
-      user: userUpdated,
-    } = await this.exhibitsService.fund(fundExhibitInput);
-    this.pubSub.publish("exhibitUpdated", { exhibitUpdated });
-    this.pubSub.publish("userUpdated", { userUpdated });
-    return exhibitUpdated && userUpdated ? true : false;
   }
 
   @Mutation((returns) => ExhibitType)
@@ -366,7 +292,7 @@ export class ExhibitsResolver {
     @Args("pageArgs") pageArgs: PageArgs,
     @Args("filter") filter: Filter,
   ): Promise<FetchProductType> {
-    return this.productsService.findAdminProductsAll(pageArgs, filter);
+    return this.groceriesService.findAdminProductsAll(pageArgs, filter);
   }
 
   @Query((returns) => FetchHistoryType)
@@ -375,16 +301,6 @@ export class ExhibitsResolver {
     @Args("filter") filter: Filter,
   ): Promise<FetchHistoryType> {
     return this.exhibitsService.findAdminCompletedAuctionsAll(pageArgs, filter);
-  }
-
-  @Mutation((returns) => Boolean)
-  async admin_move2exhibit(@Args("asin") asin: string): Promise<boolean> {
-    return await this.productsService.product2exhibit(asin);
-  }
-
-  @Mutation((returns) => Boolean)
-  async admin_move2auction(@Args("asin") asin: string): Promise<boolean> {
-    return await this.productsService.product2auction(asin);
   }
 
   @Mutation((returns) => ResType)
@@ -396,22 +312,10 @@ export class ExhibitsResolver {
   }
 
   @Mutation((returns) => Boolean)
-  async admin_add_product(
-    @Args("product") product: ProductInput,
+  async add_grocery(
+    @Args("grocery") grocery: GroceryInput,
   ): Promise<boolean> {
-    return await this.productsService.admin_add_product(product);
-  }
-
-  @Mutation((returns) => Boolean)
-  async setActive(
-    @Args("asin") asin: string,
-    @Args("active") active: boolean,
-  ): Promise<boolean> {
-    const productUpdated = await this.productsService.setActive(asin, active);
-    if (!productUpdated) return false;
-
-    return true;
-  }
-
-  ///////////////////////////end admin/////////////////////////////////////
+    console.log("grocery on the resolver: ", grocery);
+    return await this.groceriesService.add_grocery(grocery);
+  }  
 }
