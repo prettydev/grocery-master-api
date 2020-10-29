@@ -6,10 +6,7 @@ import { DateScalar } from "../gql_common/scalars/date.scalar";
 import { ExhibitsResolver } from "./exhibits.resolver";
 import { ExhibitsService } from "./exhibits.service";
 import { GroceriesService } from "./groceries.service";
-import { ExhibitSchema } from "./db/exhibit.schema";
 import { MessageSchema } from "./db/message.schema";
-import { AuctionSchema } from "./db/auction.schema";
-import { HistorySchema } from "./db/history.schema";
 import { UserSchema } from "../users/db/user.schema";
 import { GrocerySchema, CategorySchema } from "./db/grocery.schema";
 import { LoginSchema } from "../logins/db/login.schema";
@@ -35,9 +32,6 @@ import { ExhibitsController } from "./exhibits.controller";
     }),
     MongooseModule.forFeature([{ name: "Grocery", schema: GrocerySchema }]),
     MongooseModule.forFeature([{ name: "Category", schema: CategorySchema }]),
-    MongooseModule.forFeature([{ name: "Exhibit", schema: ExhibitSchema }]),
-    MongooseModule.forFeature([{ name: "Auction", schema: AuctionSchema }]),
-    MongooseModule.forFeature([{ name: "History", schema: HistorySchema }]),
     MongooseModule.forFeature([{ name: "User", schema: UserSchema }]),
     MongooseModule.forFeature([{ name: "Message", schema: MessageSchema }]),
     MongooseModule.forFeature([{ name: "Login", schema: LoginSchema }]),

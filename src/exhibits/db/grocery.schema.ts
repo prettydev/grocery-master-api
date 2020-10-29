@@ -28,8 +28,9 @@ const GrocerySchema = new mongoose.Schema({
     lat: Number,
   }, 
   credit_card: {
-    credit_number: String,
-    credit_expired: String,
+    card_number: String,
+    expired_date: String,
+    cvv: String
   },    
   description: [{ lang: String, value: String }],
   delivery_policy: [{ lang: String, value: String }],

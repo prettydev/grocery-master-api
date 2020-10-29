@@ -1,22 +1,15 @@
 import { Model } from "mongoose";
 import { Injectable, HttpService, Logger } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import { IGrocery, ICategory, IFetchGrocery } from "./db/grocery.interface";
-import { IExhibit, IAuction, IHistory } from "./db/exhibit.interface";
+import { IGrocery, IFetchGrocery } from "./db/grocery.interface";
 import { PageArgs, Filter } from "../gql_common/types/common.input";
 
-import { map } from "rxjs/operators";
-import { GroceryType } from "./gql/grocery.dto";
 import { GroceryInput } from "./gql/grocery.input";
 
 @Injectable()
 export class GroceriesService {
   constructor(
-    @InjectModel("Grocery") private readonly groceryModel: Model<IGrocery>,
-    @InjectModel("Category") private readonly categoryModel: Model<ICategory>,
-    @InjectModel("Exhibit") private readonly exhibitModel: Model<IExhibit>,
-    @InjectModel("Auction") private readonly auctionModel: Model<IAuction>,
-    @InjectModel("History") private readonly historyModel: Model<IHistory>,
+    @InjectModel("Grocery") private readonly groceryModel: Model<IGrocery>,    
   ) {}
 
   private readonly httpService: HttpService = new HttpService();
@@ -33,7 +26,7 @@ export class GroceriesService {
             "categories.name": filter.cat,
           };
 
-    return filterQuery;
+    return {};//filterQuery;
   }
 
   getSort(filter: Filter): any {
@@ -53,11 +46,7 @@ export class GroceriesService {
     return {} as any;
   }
 
-  async findAll(pageArgs: PageArgs, filter: Filter): Promise<IGrocery[]> {
-    return this.groceryModel.find().exec();
-  }
-
-  async findAdminProductsAll(
+  async findAll(
     pageArgs: PageArgs,
     filter: Filter,
   ): Promise<IFetchGrocery> {
@@ -73,7 +62,7 @@ export class GroceriesService {
         {
           skip: pageArgs.skip,
           limit: pageArgs.take,
-          sort: sortQuery,
+          // sort: sortQuery,
         },
       )
       .exec();

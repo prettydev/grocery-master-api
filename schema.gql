@@ -143,11 +143,6 @@ type ExhibitType {
   manual: Float!
 }
 
-type FetchExhibitType {
-  arr: [ExhibitType!]!
-  cnt: Float!
-}
-
 type UserValueType {
   user: UserType!
   value: Float!
@@ -181,17 +176,6 @@ type AuctionType {
   bid_ended_at: Date!
 }
 
-type FetchAuctionType {
-  arr: [AuctionType!]!
-  cnt: Float!
-  timestamp: Float!
-}
-
-type AuctionTimeType {
-  auction: AuctionType!
-  timestamp: Float!
-}
-
 type HistoryType {
   id: ID!
   product: SimpleProductType!
@@ -217,11 +201,6 @@ type HistoryType {
   tracking: String
 }
 
-type FetchHistoryType {
-  arr: [HistoryType!]!
-  cnt: Float!
-}
-
 type MessageType {
   room_id: String!
   user_id: String!
@@ -229,19 +208,6 @@ type MessageType {
   avatar: String!
   content: String!
   created_at: Date!
-}
-
-type CurrentStatisticsType {
-  online_users: Float!
-  online_bid_users: Float!
-  bids_per_action: Float!
-}
-
-type HistoryStatisticsType {
-  total_actions: Float!
-  total_winners: Float!
-  max_users: Float!
-  bids_per_action: Float!
 }
 
 type FetchProductType {
@@ -271,17 +237,7 @@ type FetchNoteType {
 
 type Query {
   messages: [MessageType!]!
-  exhibits(filter: Filter!, pageArgs: PageArgs!): FetchExhibitType!
-  top_exhibits: [ExhibitType!]!
-  auctions(filter: Filter!, pageArgs: PageArgs!): FetchAuctionType!
-  last_auction(filter: Filter!, pageArgs: PageArgs!): AuctionType!
-  admin_auctions(filter: Filter!, pageArgs: PageArgs!): FetchAuctionType!
-  getAuctionLiveTimer(auction_id: String!): Boolean!
-  histories(filter: Filter!, pageArgs: PageArgs!): FetchHistoryType!
-  currentStatistics: CurrentStatisticsType!
-  historyStatistics: HistoryStatisticsType!
-  admin_products(filter: Filter!, pageArgs: PageArgs!): FetchProductType!
-  admin_completed_auctions(filter: Filter!, pageArgs: PageArgs!): FetchHistoryType!
+  groceries(filter: Filter!, pageArgs: PageArgs!): FetchProductType!
   notes(user_id: String!, filter: Filter!, pageArgs: PageArgs!): FetchNoteType!
   user(id: String!): UserType!
   users(key: String!, sort: String!, order: String, cat: String!, skip: Int!, take: Int!): [UserType!]!
@@ -307,16 +263,6 @@ input LoginUserInput {
 
 type Mutation {
   addMessage(message: MessageInput!): Boolean!
-  setThreshold(threshold: SetThresholdInput!): ExhibitType!
-  removeExhibit(id: String!): Boolean!
-  setCampaign(campaign: SetCampaignInput!): AuctionType!
-  setReserved(reserved: SetReservedInput!): Boolean!
-  setExhibitManual(exhibit_id: String!, manual: Float!): Boolean!
-  setAuctionManual(auction_id: String!, manual: Float!): Boolean!
-  setTimer(input: SetTimerInput!): Boolean!
-  bid(input: BidAuctionInput!): Boolean!
-  auto(input: AutoAuctionInput!): Boolean!
-  admin_add_tracking(tracking: String!, id: String!): ResType!
   add_grocery(grocery: GroceryInput!): Boolean!
   sendAuthEmail(email: String!, user_id: String!): Boolean!
   sendEmail(content: String!, receivers: [String!]!): Boolean!
@@ -343,39 +289,6 @@ input MessageInput {
   avatar: String!
   content: String!
   created_at: Date!
-}
-
-input SetThresholdInput {
-  exhibit_id: String!
-  threshold: Float!
-}
-
-input SetCampaignInput {
-  auction_id: String!
-  campaign: Boolean!
-}
-
-input SetReservedInput {
-  auction_id: String!
-  value: Boolean!
-}
-
-input SetTimerInput {
-  auction_id: String!
-  timer: Float!
-}
-
-input BidAuctionInput {
-  auction_id: String!
-  user: String!
-  value: Float!
-}
-
-input AutoAuctionInput {
-  auction_id: String!
-  user: String!
-  value: Float!
-  active: Boolean!
 }
 
 input GroceryInput {
@@ -450,11 +363,7 @@ input SocialBody {
 scalar Upload
 
 type Subscription {
-  exhibitUpdated(exhibit_id: String!): ExhibitType!
-  auctionUpdated(auction_id: String!): AuctionTimeType!
   messageAdded(user_id: String!, room_id: String!): MessageType!
-  currentUpdated: CurrentStatisticsType!
-  historyUpdated: HistoryStatisticsType!
   noteUpdated(user_id: String!): NoteType!
   privateNoteUpdated(user_id: String!): PrivateNoteType!
   userAdded: UserType!
