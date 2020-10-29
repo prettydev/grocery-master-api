@@ -353,7 +353,7 @@ export class HistoryStatisticsType {
 }
 
 @ObjectType()
-export class FetchProductType {
+export class FetchGroceryType {
   @Field((type) => [GroceryType])
   arr: GroceryType[];
 

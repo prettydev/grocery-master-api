@@ -72,6 +72,19 @@ export class GroceriesService {
     return { arr, cnt };
   }
 
+async findTopAll(): Promise<IGrocery[]> {
+    
+    const arr = await this.groceryModel
+      .find(
+        {},
+        {},
+        {},
+      )
+      .exec();
+
+    return arr;
+  }
+
   async remove(id: string): Promise<boolean> {
     return true;
   }

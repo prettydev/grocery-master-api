@@ -210,7 +210,7 @@ type MessageType {
   created_at: Date!
 }
 
-type FetchProductType {
+type FetchGroceryType {
   arr: [GroceryType!]!
   cnt: Float!
 }
@@ -237,7 +237,8 @@ type FetchNoteType {
 
 type Query {
   messages: [MessageType!]!
-  groceries(filter: Filter!, pageArgs: PageArgs!): FetchProductType!
+  groceries(filter: Filter!, pageArgs: PageArgs!): FetchGroceryType!
+  top_groceries: [GroceryType!]!
   notes(user_id: String!, filter: Filter!, pageArgs: PageArgs!): FetchNoteType!
   user(id: String!): UserType!
   users(key: String!, sort: String!, order: String, cat: String!, skip: Int!, take: Int!): [UserType!]!

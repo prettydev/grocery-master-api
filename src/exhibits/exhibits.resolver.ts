@@ -9,7 +9,7 @@ import { PageArgs, Filter } from "../gql_common/types/common.input";
 
 import {
   ExhibitType,
-  FetchProductType,
+  FetchGroceryType,
   AuctionTimeType,
   MessageType,
   CurrentStatisticsType,
@@ -18,6 +18,7 @@ import {
 import { ExhibitsService } from "./exhibits.service";
 import { GroceriesService } from "./groceries.service";
 import { GroceryInput as GroceryInput } from "./gql/grocery.input";
+import { GroceryType } from "./gql/grocery.dto";
 
 @Resolver()
 export class ExhibitsResolver {
@@ -57,12 +58,17 @@ export class ExhibitsResolver {
     return this.exhibitsService.findMessages();
   }
 
-  @Query((returns) => FetchProductType)
+  @Query((returns) => FetchGroceryType)
   groceries(
     @Args("pageArgs") pageArgs: PageArgs,
     @Args("filter") filter: Filter,
-  ): Promise<FetchProductType> {
+  ): Promise<FetchGroceryType> {
     return this.groceriesService.findAll(pageArgs, filter);
+  }
+
+  @Query((returns) => [GroceryType])
+  top_groceries(): Promise<GroceryType[]> {
+    return this.groceriesService.findTopAll();
   }
 
   @Mutation((returns) => Boolean)
