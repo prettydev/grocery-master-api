@@ -3,9 +3,7 @@ import { IsOptional, Length, MaxLength } from "class-validator";
 
 @InputType()
 export class NewUserInput {
-  @Field()
-  username: string;
-
+  
   @Field()
   email: string;
 
@@ -13,15 +11,7 @@ export class NewUserInput {
   password: string;
 
   @Field({ nullable: true })
-  plan: string;
-
-  @Field({ nullable: true })
-  phone: string;
-
-  @Field({ nullable: true })
-  @IsOptional()
-  @Length(10, 255)
-  avatar?: string;  
+  image?: string;  
 }
 
 @InputType()

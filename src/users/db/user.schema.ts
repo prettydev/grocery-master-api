@@ -3,18 +3,50 @@ const uniqueValidator = require("mongoose-unique-validator");
 
 const UserSchema = new Schema(
   {
-    username: { type: String },
+    name: { type: String },
+    image: String,
     email: { type: String, unique: true },
+    email_verified: { type: Boolean, default: false },
+
     password: String,
-    avatar: String,
-    phone: String,
+    
     plan: { type: String, default: "basic" },
     role: { type: String, default: "user" },
+    
     coins: { type: Number, default: 0 },
     points: { type: Number, default: 0 },
-    email_verified: { type: Boolean, default: false },
-    phone_verified: { type: Boolean, default: false },
+
+    total_order: {type: Number, default: 0},
+    total_order_amount: {type: Number, default: 0},
     
+    address: {
+      type: [{
+        id: String,
+        type: String,
+        name: String,
+        info: String,
+      }],
+      default: []
+    },    
+    contact: {
+      type: [{
+        id: String,
+        type: String,
+        number: String,
+        }],
+      default:[]
+    },
+    card: {
+      type: [{
+        id: String,
+        type: String,
+        cardType: String,
+        name: String,
+        lastFourDigit: String,
+      }],
+      default: []
+    },
+
     facebook: {
       email: { type: String, unique: true },
       name: String,

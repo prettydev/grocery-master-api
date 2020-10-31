@@ -1,5 +1,26 @@
 import { Document } from "mongoose";
 
+export interface IAddress {
+  id: string;
+  type: string;
+  name: string;
+  info: string;
+}
+
+export interface IContact {
+  id: string;
+  type: string;
+  number: string;
+}
+
+export interface ICard {
+  id: string;
+  type: string;
+  cardType: string;
+  name: string;
+  lastFourDigit: string;
+}
+
 export interface ISocial {
   name: string;
   email: string;
@@ -8,19 +29,26 @@ export interface ISocial {
 
 export interface IUser extends Document {
   readonly id: string;
-  readonly username: string;
+  readonly name: string;
+  readonly image: string;
+
   readonly email: string;
+  readonly email_verified: boolean;
+  
   readonly password: string;
-  readonly avatar: string;
-  readonly phone: string;
+  
   readonly plan: string;
   readonly role: string;
 
   readonly coins: number;
   readonly points: number;
 
-  readonly email_verified: boolean;
-  readonly phone_verified: boolean;
+  readonly total_order?: number,
+  readonly total_order_amount?: number,
+
+  readonly address?: IAddress[];
+  readonly card?: ICard[],
+  readonly contact?: IContact[],
 
   readonly facebook: ISocial;
   readonly google: ISocial;

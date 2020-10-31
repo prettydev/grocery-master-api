@@ -52,7 +52,7 @@ export class OtpsService {
 
     try {
       const res = await twilioClient.messages.create({
-        body: "test message from the exhibia dev team, please ignore this.",
+        body: "test message from the byebyeGROCERY dev team, please ignore this.",
         from: process.env.TWILIO_FROM,
         to: `+${phone }`
       })

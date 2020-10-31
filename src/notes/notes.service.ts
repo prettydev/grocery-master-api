@@ -122,8 +122,8 @@ export class NotesService {
       const msg = {
         to,
         from: "creditcoder@hotmail.com",
-        subject: "Exhibia Notification",
-        text: "This is from the Exhibia.",
+        subject: "byebyeGROCERY Notification",
+        text: "This is from the byebyeGROCERY.",
         html,
       };
       await sgMail.send(msg);

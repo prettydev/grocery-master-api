@@ -75,6 +75,27 @@ type ResType {
   message: String
 }
 
+type AddressType {
+  id: String
+  name: String
+  type: String
+  info: String
+}
+
+type CardType {
+  id: String
+  name: String
+  type: String
+  cardType: String
+  lastFourDigit: String
+}
+
+type ContactType {
+  id: String
+  type: String
+  number: String
+}
+
 type SocialType {
   name: String
   email: String
@@ -83,17 +104,20 @@ type SocialType {
 
 type UserType {
   id: ID!
-  username: String
+  name: String
   email: String!
   password: String
   plan: String
   role: String
-  phone: String
-  avatar: String
+  image: String
   coins: Float
   points: Float
   email_verified: Boolean
-  phone_verified: Boolean
+  total_order: Float
+  total_order_amount: Float
+  address: [AddressType!]
+  card: [CardType!]
+  contact: ContactType
   facebook: SocialType
   google: SocialType
   expired_at: Date
@@ -322,12 +346,9 @@ input II18N {
 }
 
 input NewUserInput {
-  username: String!
   email: String!
   password: String!
-  plan: String
-  phone: String
-  avatar: String
+  image: String
 }
 
 input Social {

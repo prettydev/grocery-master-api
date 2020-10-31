@@ -10,6 +10,54 @@ export class LoginType {
 }
 
 @ObjectType()
+export class AddressType {
+
+  @Field({ nullable: true })
+  readonly id: string;
+
+  @Field({ nullable: true })
+  readonly name: string;
+
+  @Field({ nullable: true })
+  readonly type: string;
+
+  @Field({ nullable: true })
+  readonly info: string;
+}
+
+@ObjectType()
+export class CardType {
+
+  @Field({ nullable: true })
+  readonly id: string;
+
+  @Field({ nullable: true })
+  readonly name: string;
+
+  @Field({ nullable: true })
+  readonly type: string;
+
+  @Field({ nullable: true })
+  readonly cardType: string;
+
+  @Field({ nullable: true })
+  readonly lastFourDigit: string;
+
+}
+
+@ObjectType()
+export class ContactType {
+  @Field({ nullable: true })
+  readonly id: string;
+
+  @Field({ nullable: true })
+  readonly type: string;
+
+  @Field({ nullable: true })
+  readonly number: string;
+}
+
+@ObjectType()
 export class SocialType {
   @Field({ nullable: true })
   readonly name: string;
@@ -27,7 +75,7 @@ export class UserType {
   id: string;
 
   @Field({ nullable: true })
-  readonly username: string;
+  readonly name: string;
 
   @Field()
   readonly email: string;
@@ -46,11 +94,7 @@ export class UserType {
 
   @Field(() => String)
   @Field({ nullable: true })
-  readonly phone: string;
-
-  @Field(() => String)
-  @Field({ nullable: true })
-  readonly avatar: string;
+  readonly image: string;
 
   @Field(() => Number)
   @Field({ nullable: true })
@@ -64,9 +108,22 @@ export class UserType {
   @Field({ nullable: true })
   readonly email_verified: boolean;
 
-  @Field(() => Boolean)
+  @Field(() => Number)
   @Field({ nullable: true })
-  readonly phone_verified: boolean;
+  readonly total_order?: number;
+
+  @Field(() => Number)
+  @Field({ nullable: true })
+  readonly total_order_amount?: number;
+
+  @Field((type) => [AddressType], {nullable: true})
+  readonly address?: AddressType[];
+  
+  @Field((type)=> [CardType], { nullable: true })
+  readonly card?: CardType[];
+
+  @Field((type)=>ContactType, { nullable: true })
+  readonly contact?: ContactType[];
 
   @Field({ nullable: true })
   readonly facebook: SocialType;

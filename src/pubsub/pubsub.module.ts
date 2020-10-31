@@ -19,7 +19,7 @@ dotenv.config();
         transport: Transport.RMQ,
         options: {
           urls: [process.env.rmq_url],
-          queue: "exhibia",
+          queue: "byebyeGROCERY",
           queueOptions: { durable: false },
           socketOptions: { noDelay: true },
         },
