@@ -42,7 +42,7 @@ const UserSchema = new Schema(
         type: String,
         cardType: String,
         name: String,
-        lastFourDigit: String,
+        lastFourDigit: Number,
       }],
       default: []
     },

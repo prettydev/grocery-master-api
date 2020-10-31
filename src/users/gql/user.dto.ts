@@ -41,7 +41,7 @@ export class CardType {
   readonly cardType: string;
 
   @Field({ nullable: true })
-  readonly lastFourDigit: string;
+  readonly lastFourDigit: number;
 
 }
 

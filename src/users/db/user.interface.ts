@@ -18,7 +18,7 @@ export interface ICard {
   type: string;
   cardType: string;
   name: string;
-  lastFourDigit: string;
+  lastFourDigit: number;
 }
 
 export interface ISocial {
