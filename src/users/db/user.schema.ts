@@ -5,7 +5,7 @@ const UserSchema = new Schema(
   {
     name: { type: String },
     image: String,
-    email: { type: String, unique: true },
+    email: { type: String, trim: true, index: true, unique: true, sparse: true },
     email_verified: { type: Boolean, default: false },
 
     password: String,
@@ -48,12 +48,12 @@ const UserSchema = new Schema(
     },
 
     facebook: {
-      email: { type: String, unique: true },
+      email: { type: String, trim: true, index: true, unique: true, sparse: true },
       name: String,
       image: String,
     },
     google: {
-      email: { type: String, unique: true },
+      email: { type: String, trim: true, index: true, unique: true, sparse: true },
       name: String,
       image: String,
     },
