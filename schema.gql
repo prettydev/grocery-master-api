@@ -81,21 +81,6 @@ type SocialType {
   image: String
 }
 
-type FriendUserType {
-  id: ID!
-  username: String
-  email: String!
-  avatar: String
-}
-
-type FriendDateType {
-  friend: FriendUserType!
-  created_at: Date!
-}
-
-"""Date custom scalar type"""
-scalar Date
-
 type UserType {
   id: ID!
   username: String
@@ -105,21 +90,19 @@ type UserType {
   role: String
   phone: String
   avatar: String
-  wins: Float
   coins: Float
   points: Float
   email_verified: Boolean
   phone_verified: Boolean
-  friends: [FriendDateType!]
-  note_channels: [String!]
-  note_cases: [String!]
   facebook: SocialType
   google: SocialType
-  twitter: SocialType
   expired_at: Date
   created_at: Date
   updated_at: Date
 }
+
+"""Date custom scalar type"""
+scalar Date
 
 type UserResult {
   user: UserType
@@ -276,8 +259,6 @@ type Mutation {
   addSocial(social: Social!, user_id: String!): Boolean!
   socialRegisterLogin(social: Social!): UserResult!
   changePassword(password: String!, current_password: String!, user_id: String!): ResType!
-  changeNoteChannels(note_channels: [String!]!, user_id: String!): ResType!
-  changeNoteCases(note_cases: [String!]!, user_id: String!): ResType!
   exchange(coins: Float!, user_id: String!): Boolean!
   updatePlan(user_id: String!, plan_name: String!): Boolean!
   uploadFile(file: Upload!): Boolean!

@@ -12,7 +12,7 @@ import { PubSub } from "apollo-server-express";
 import { NotesService } from "../notes/notes.service";
 import { OtpsService } from "../otp/otps.service";
 
-import { IUser, IFetchUser, IChannel, ICase } from "./db/user.interface";
+import { IUser, IFetchUser } from "./db/user.interface";
 import { NewUserInput, LoginUserInput, Social } from "./gql/new-user.input";
 import { PageArgs, Filter } from "../gql_common/types/common.input";
 import { ResType } from "src/gql_common/types/common.object";
@@ -77,14 +77,6 @@ export class UsersService {
     );
   }
 
-  async increaseWins(id: string, wins = 1): Promise<IUser> {
-    return this.userModel.findOneAndUpdate(
-      { _id: new mongodb.ObjectID(id) },
-      { $inc: { wins } },
-      { new: true },
-    );
-  }
-
   async decreaseCoins(id: string, amount: number): Promise<IUser> {
     return this.userModel.findOneAndUpdate(
       { _id: new mongodb.ObjectID(id) },
@@ -97,14 +89,6 @@ export class UsersService {
     return this.userModel.findOneAndUpdate(
       { _id: new mongodb.ObjectID(id) },
       { $inc: { points: amount } },
-      { new: true },
-    );
-  }
-
-  async updateWins(id: string, amount: number): Promise<IUser> {
-    return this.userModel.findOneAndUpdate(
-      { _id: new mongodb.ObjectID(id) },
-      { $inc: { wins: amount } },
       { new: true },
     );
   }
@@ -205,25 +189,6 @@ export class UsersService {
     return this.userModel.findOneAndUpdate(
       { _id: new mongodb.ObjectID(user_id) },
       { password: hash },
-      { new: true },
-    );
-  }
-
-  async changeNoteChannels(
-    user_id: string,
-    note_channels: IChannel[],
-  ): Promise<IUser> {
-    return this.userModel.findOneAndUpdate(
-      { _id: new mongodb.ObjectID(user_id) },
-      { note_channels },
-      { new: true },
-    );
-  }
-
-  async changeNoteCases(user_id: string, note_cases: ICase[]): Promise<IUser> {
-    return this.userModel.findOneAndUpdate(
-      { _id: new mongodb.ObjectID(user_id) },
-      { note_cases },
       { new: true },
     );
   }

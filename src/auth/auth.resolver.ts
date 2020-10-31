@@ -17,8 +17,6 @@ import {
 } from "../users/gql/new-user.input";
 import { PageArgs, Filter } from "../gql_common/types/common.input";
 
-import { ICase, IChannel } from "../users/db/user.interface";
-
 @Resolver()
 export class AuthResolver {
   private readonly logger = new Logger(AuthService.name);
@@ -175,46 +173,6 @@ export class AuthResolver {
       return { code: "error", message: "Failed to update the password!" };
 
     return { code: "success", message: "The password updated successfully!" };
-  }
-
-  @Mutation((returns) => ResType)
-  async changeNoteChannels(
-    @Args("user_id") user_id: string,
-    @Args({ name: "note_channels", type: () => [String] })
-    note_channels: IChannel[],
-  ): Promise<ResType> {
-    const userUpdated = await this.usersService.changeNoteChannels(
-      user_id,
-      note_channels,
-    );
-    if (!userUpdated) {
-      return { code: "error", message: "Error occured!" };
-    }
-
-    this.pubSub.publish("userUpdated", { userUpdated });    
-    return { code: "success", message: "Notifying ways updated successfully!" };
-  }
-
-  @Mutation((returns) => ResType)
-  async changeNoteCases(
-    @Args("user_id") user_id: string,
-    @Args({ name: "note_cases", type: () => [String] })
-    note_cases: ICase[],
-  ): Promise<ResType> {
-    const userUpdated = await this.usersService.changeNoteCases(
-      user_id,
-      note_cases,
-    );
-    if (!userUpdated) {
-      return { code: "error", message: "Error occured!" };
-    }
-
-    this.pubSub.publish("userUpdated", { userUpdated });
-    
-    return {
-      code: "success",
-      message: "Notification cases updated successfully!",
-    };
   }
 
   @Mutation((returns) => Boolean)
