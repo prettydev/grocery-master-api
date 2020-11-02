@@ -14,7 +14,9 @@ const httpsOptions = {
 dotenv.config();
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, { httpsOptions });
+  const app = await NestFactory.create(AppModule, {
+    // httpsOptions
+  });
   app.enableCors();
   app.use(helmet());
   app.useGlobalPipes(new ValidationPipe());

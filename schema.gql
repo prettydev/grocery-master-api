@@ -87,7 +87,7 @@ type CardType {
   name: String
   type: String
   cardType: String
-  lastFourDigit: String
+  lastFourDigit: Float
 }
 
 type ContactType {
