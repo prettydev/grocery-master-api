@@ -7,8 +7,8 @@ import * as fs from "fs";
 import { AppModule } from "./app.module";
 
 const httpsOptions = {
-  key: fs.readFileSync("./secrets/byebyegrocery.com.key"),
-  cert: fs.readFileSync("./secrets/byebyegrocery.com.crt"),
+  key: fs.readFileSync("./certificates/byebyegrocery.online.key"),
+  cert: fs.readFileSync("./certificates/byebyegrocery.online.crt"),
 };
 
 dotenv.config();
