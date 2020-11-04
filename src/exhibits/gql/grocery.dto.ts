@@ -119,7 +119,9 @@ export class CreditCardType {
 @ObjectType()
 export class GroceryType {
   @Field()
-  name: string;  
+  name: string; 
+  @Field()
+  domain: string;
   @Field()
   second_lang: string;
   @Field()

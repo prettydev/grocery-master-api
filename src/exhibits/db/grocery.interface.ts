@@ -68,6 +68,7 @@ export interface ICreditCard {
 
 export interface IGrocery extends Document {
   name: string;  
+  domain: string;
   second_lang: string;
   mobile: string;
   owner_email: string;

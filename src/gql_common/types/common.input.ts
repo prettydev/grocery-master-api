@@ -28,4 +28,7 @@ export class Filter {
 
   @Field((type) => String)
   cat: string;
+
+  @Field((type) => String)
+  email: string;
 }

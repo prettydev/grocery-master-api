@@ -41,6 +41,7 @@ type CreditCardType {
 
 type GroceryType {
   name: String!
+  domain: String!
   second_lang: String!
   mobile: String!
   owner_email: String!
@@ -248,7 +249,7 @@ type Query {
   top_groceries: [GroceryType!]!
   notes(user_id: String!, filter: Filter!, pageArgs: PageArgs!): FetchNoteType!
   user(id: String!): UserType!
-  users(key: String!, sort: String!, order: String, cat: String!, skip: Int!, take: Int!): [UserType!]!
+  users(key: String!, sort: String!, order: String, cat: String!, email: String!, skip: Int!, take: Int!): [UserType!]!
   login(user: LoginUserInput!): UserResult!
 }
 
@@ -257,6 +258,7 @@ input Filter {
   sort: String!
   order: String
   cat: String!
+  email: String!
 }
 
 input PageArgs {
@@ -299,6 +301,7 @@ input MessageInput {
 
 input GroceryInput {
   name: String!
+  domain: String!
   second_lang: String!
   mobile: String!
   owner_email: String!

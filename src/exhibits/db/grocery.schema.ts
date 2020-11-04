@@ -1,7 +1,8 @@
 import * as mongoose from "mongoose";
 
 const GrocerySchema = new mongoose.Schema({
-  name: String,
+  name: {$type: String, unique: true},
+  domain: {$type: String, unique: true},
   second_lang: String,
   mobile: String,  
   owner_email: String,  
@@ -12,7 +13,7 @@ const GrocerySchema = new mongoose.Schema({
   delivery_radius: Number,
   min_order: Number,
   first_offer_discount: Number,  
-  is_collect: { type: Boolean, default: false },
+  is_collect: { $type: Boolean, default: false },
   logo: {
     link: String,
   },
@@ -32,13 +33,18 @@ const GrocerySchema = new mongoose.Schema({
     expired_date: String,
     cvv: String
   },    
-  description: [{ lang: String, value: String }],
-  delivery_policy: [{ lang: String, value: String }],
-  about_us: [{ lang: String, value: String }],
-
-  created_at: { type: Date, default: Date.now },
-  updated_at: { type: Date, default: Date.now },
-});
+    description: [{ lang: String, value: String }],
+    delivery_policy: [{ lang: String, value: String }],
+    about_us: [{ lang: String, value: String }],  
+  },
+  {
+    timestamps: {
+      createdAt: "created_at",
+      updatedAt: "updated_at",
+    },
+    typeKey: "$type"
+  },  
+);
 
 GrocerySchema.pre("save", function (next) {
   next();
@@ -48,7 +54,13 @@ GrocerySchema.pre("save", function (next) {
  * only for root category
  */
 const CategorySchema = new mongoose.Schema({
-  name: { type: String, required: true, unique: true },
+  name: { $type: String, required: true, unique: true },
+}, {
+    timestamps: {
+      createdAt: "created_at",
+      updatedAt: "updated_at",
+    },
+    typeKey: "$type"
 });
 
 export { GrocerySchema, CategorySchema };

@@ -26,7 +26,7 @@ export class GroceriesService {
             "categories.name": filter.cat,
           };
 
-    return {};//filterQuery;
+    return {owner_email:filter.email};//filterQuery;
   }
 
   getSort(filter: Filter): any {

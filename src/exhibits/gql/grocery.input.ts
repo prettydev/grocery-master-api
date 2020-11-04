@@ -110,7 +110,9 @@ export class ICreditCard {
 @InputType()
 export class GroceryInput {
   @Field()
-  name: string;  
+  name: string;
+  @Field()
+  domain: string;  
   @Field()
   second_lang: string;
   @Field()
